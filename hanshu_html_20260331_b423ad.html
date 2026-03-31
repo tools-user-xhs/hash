@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>函数智囊库 · 场景查询与案例实战</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(145deg, #f0f4fa 0%, #e9eef5 100%);
+            font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem 1.5rem;
+        }
+
+        /* 主卡片 */
+        .card {
+            max-width: 1200px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 2rem;
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.2), 0 1px 2px rgba(0, 0, 0, 0.02);
+            overflow: hidden;
+            transition: all 0.2s ease;
+        }
+
+        /* 头部 */
+        .header {
+            padding: 1.8rem 2rem 0.8rem 2rem;
+            border-bottom: 1px solid #eef2f8;
+        }
+
+        .header h1 {
+            font-size: 1.9rem;
+            font-weight: 650;
+            letter-spacing: -0.3px;
+            background: linear-gradient(135deg, #1F2A44, #2C3E66);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            margin-bottom: 0.3rem;
+        }
+
+        .header p {
+            color: #5c6f87;
+            font-size: 0.9rem;
+            font-weight: 400;
+        }
+
+        /* 控制栏: 下拉框 + 查询按钮 */
+        .control-bar {
+            padding: 1.6rem 2rem 1rem 2rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: flex-end;
+            border-bottom: 1px solid #eef2fa;
+        }
+
+        .select-group {
+            flex: 2;
+            min-width: 260px;
+        }
+
+        .select-group label {
+            display: block;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #4a6a8b;
+            margin-bottom: 0.4rem;
+        }
+
+        .custom-select {
+            width: 100%;
+            padding: 0.85rem 1rem;
+            font-size: 0.95rem;
+            font-weight: 500;
+            background-color: #fafcff;
+            border: 1px solid #e2eaf1;
+            border-radius: 1rem;
+            color: #1e2f3f;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            outline: none;
+        }
+
+        .custom-select:hover {
+            border-color: #b9d0ec;
+            background-color: #ffffff;
+        }
+
+        .custom-select:focus {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .btn-query {
+            flex: 0 0 auto;
+            background: #1f2e46;
+            border: none;
+            padding: 0.85rem 2rem;
+            border-radius: 2rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: white;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-query:hover {
+            background: #2a3e5a;
+            transform: translateY(-1px);
+            box-shadow: 0 10px 20px -5px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-query:active {
+            transform: translateY(1px);
+        }
+
+        /* 内容展示区 */
+        .content-area {
+            padding: 1.5rem 2rem 2rem 2rem;
+        }
+
+        /* 场景卡片 */
+        .scene-card {
+            background: #f9fbfe;
+            border-radius: 1.5rem;
+            padding: 1.5rem 1.8rem;
+            margin-bottom: 1.8rem;
+            border: 1px solid #eef3fc;
+            transition: all 0.2s;
+        }
+
+        .scene-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 650;
+            font-size: 1.2rem;
+            color: #1f3a4b;
+            margin-bottom: 1rem;
+        }
+
+        .scene-title span:first-child {
+            font-size: 1.5rem;
+        }
+
+        .scene-desc {
+            color: #2c425c;
+            line-height: 1.55;
+            font-size: 1rem;
+            background: #ffffffd9;
+            padding: 0.2rem 0;
+            border-left: 3px solid #3b82f6;
+            padding-left: 1rem;
+            margin-top: 0.25rem;
+        }
+
+        .problem-badge {
+            display: inline-block;
+            background: #eef2ff;
+            color: #1e40af;
+            border-radius: 2rem;
+            padding: 0.2rem 0.8rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-bottom: 0.8rem;
+        }
+
+        /* 案例区域 */
+        .case-section {
+            background: #ffffff;
+            border-radius: 1.25rem;
+            padding: 0.2rem 0;
+        }
+
+        .case-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #1f2e3e;
+            margin-bottom: 1rem;
+            border-bottom: 1px dashed #e2edf7;
+            padding-bottom: 0.6rem;
+        }
+
+        .case-header span {
+            font-size: 1.3rem;
+        }
+
+        .case-content {
+            background-color: #ffffff;
+            border-radius: 1rem;
+            padding: 0.2rem 0;
+        }
+
+        pre {
+            background: #f1f5f9;
+            padding: 1.2rem;
+            border-radius: 1rem;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+            font-size: 0.8rem;
+            color: #0f172a;
+            margin: 0.5rem 0 1rem 0;
+            border: 1px solid #e9edf2;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+
+        .explain-box {
+            margin-top: 0.6rem;
+            font-family: system-ui, 'Segoe UI', sans-serif;
+            font-size: 0.9rem;
+            background: #f8fafc;
+            padding: 0.8rem 1rem;
+            border-radius: 14px;
+            border-left: 3px solid #3b82f6;
+            color: #2c3e4e;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: #8aa4c2;
+            font-weight: 450;
+            background: #fafdff;
+            border-radius: 1.5rem;
+        }
+
+        footer {
+            padding: 1rem 2rem 1.5rem;
+            font-size: 0.7rem;
+            text-align: center;
+            color: #8aa2bc;
+            border-top: 1px solid #eef2fa;
+        }
+
+        @media (max-width: 640px) {
+            .control-bar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .btn-query {
+                justify-content: center;
+            }
+            .scene-card {
+                padding: 1.2rem;
+            }
+            .header h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <div class="header">
+        <h1>📚 函数场景导航 · 一查便知</h1>
+        <p>选择一个函数 → 点击「查询」→ 立即了解它的使用场景、解决什么问题，并查看实战案例</p>
+    </div>
+    <div class="control-bar">
+        <div class="select-group">
+            <label>🧩 选择函数</label>
+            <select id="functionSelect" class="custom-select">
+                <!-- 动态填充函数列表 -->
+            </select>
+        </div>
+        <button id="queryBtn" class="btn-query">🔍 查询 · 场景与案例</button>
+    </div>
+    <div class="content-area" id="contentArea">
+        <div class="empty-state">
+            ✨ 请从上方下拉框中选择一个函数，<br>
+            点击「查询」即可查看该函数的核心使用场景、解决的问题以及具体代码案例。
+        </div>
+    </div>
+    <footer>覆盖办公/表格函数 & 编程核心方法 · 每个函数都配有场景解读与可执行示例</footer>
+</div>
+
+<script>
+    // ----------------------------------------------
+    // 函数库：每个条目包含 函数名、场景描述(解决什么问题)、案例(代码+解释)
+    // 涵盖 VLOOKUP / XLOOKUP / SUMIFS / INDEX+MATCH / IF / MID / FIND 等常用函数
+    // ----------------------------------------------
+    const functionsLibrary = [
+        {
+            id: "vlookup",
+            name: "VLOOKUP (垂直查找)",
+            problemSolved: "✅ 解决「根据某个关键词，在表格最左列查找并返回同行其他列数据」的问题。常用于员工信息匹配、产品价格查询、订单状态关联等。",
+            description: "当需要基于唯一标识（如工号、ID）从另一个区域获取对应的属性（部门、薪资等）时使用。VLOOKUP 支持精确/近似匹配，是办公效率的核心武器。",
+            usageCase: {
+                title: "📌 案例：根据产品ID 查找价格",
+                code: `// 场景：订单表需要根据产品编号自动填充单价
+// 价格表区域：A列产品ID，B列产品名，C列单价
+// 公式: =VLOOKUP(查找值, 表格区域, 返回列号, [匹配方式])
+// 精确查找E2单元格的产品ID，返回价格表第3列的价格
+=VLOOKUP(E2, A2:C100, 3, FALSE)
+
+// 实际数据示例:
+// 产品ID "P10086" 在价格表A列出现，则返回对应C列 299
+// 注意事项: 查找列必须在区域第一列，否则返回#N/A`,
+                explain: "💡 VLOOKUP 是办公必备，但注意查找值必须在区域首列；第四参数建议 FALSE 精确匹配，避免错误。可配合 IFERROR 美化结果。"
+            }
+        },
+        {
+            id: "xlookup",
+            name: "XLOOKUP (新一代查找)",
+            problemSolved: "⚡ 解决 VLOOKUP 无法向左查找、需要担心列位置变动的问题。支持任意方向查找、自定义未找到返回值、返回数组。",
+            description: "XLOOKUP 可以垂直或水平查找，并且能够返回多列数据，是 Office 365 / WPS 新版中的灵活查找函数。",
+            usageCase: {
+                title: "📌 案例：根据员工姓名反向查找工号",
+                code: `// 场景：根据姓名查找对应的工号（姓名列在右侧，工号列在左侧）
+// 语法: =XLOOKUP(查找值, 查找数组, 返回数组, [未找到时返回值])
+=XLOOKUP("张敏", B:B, A:A, "无此人")
+
+// 同时返回多个值：根据产品ID 返回产品名称和单价
+=XLOOKUP(G2, A:A, B:C)   // 返回相邻两列内容
+
+// 支持从下往上搜索等高级模式`,
+                explain: "💡 XLOOKUP 突破了 VLOOKUP 的限制，无需计数返回列号，且可自定义错误文案，强烈推荐新版本使用。"
+            }
+        },
+        {
+            id: "sumifs",
+            name: "SUMIFS (多条件求和)",
+            problemSolved: "📊 解决「需要满足一个或多个条件时对数值列求和」的问题。如统计某地区某产品的总销量、财务分类汇总等。",
+            description: "SUMIFS 可以对符合多个条件的单元格求和，广泛用于销售报表、库存统计、费用分析等场景。",
+            usageCase: {
+                title: "📌 案例：统计华东区 2024年1月 销售额",
+                code: `// 数据: A列日期, B列区域, C列销售额
+// 需求: 区域="华东" 且 日期在2024年1月内
+=SUMIFS(C:C, B:B, "华东", A:A, ">=2024-01-01", A:A, "<=2024-01-31")
+
+// 进阶：使用通配符模糊匹配
+=SUMIFS(D:D, E:E, "笔记本*", F:F, ">10")  // 产品名以笔记本开头且销量>10`,
+                explain: "💡 SUMIFS 求和区域在第一位，条件区域和条件成对出现，支持多达127组条件。是替代手动筛选求和的利器。"
+            }
+        },
+        {
+            id: "index_match",
+            name: "INDEX + MATCH (组合查找)",
+            problemSolved: "🎯 解决 VLOOKUP 无法向左查找及插入列导致公式失效的问题。实现更灵活、更稳定的双向查找。",
+            description: "INDEX 返回区域中指定行/列的值，MATCH 返回值在区域中的位置。两者组合比 VLOOKUP 更强大且性能优异。",
+            usageCase: {
+                title: "📌 案例：根据员工姓名查找部门（姓名列在B，部门列在A）",
+                code: `// 经典组合: INDEX(返回列, MATCH(查找值, 查找列, 0))
+=INDEX(A:A, MATCH("李芳", B:B, 0))
+
+// 二维表交叉查询: 行标题为产品，列标题为季度
+=INDEX(B2:E10, MATCH(G1, A2:A10, 0), MATCH(H1, B1:E1, 0))
+
+// 动态获取最后一个数值
+=INDEX(A:A, COUNTA(A:A))`,
+                explain: "💡 INDEX+MATCH 不受查找列位置限制，且不会因为表格增减列而报错，是资深用户的优选方案。"
+            }
+        },
+        {
+            id: "if_func",
+            name: "IF (逻辑判断)",
+            problemSolved: "⚖️ 解决「根据不同条件返回不同结果」的问题。如成绩等级划分、费用状态判断、风险预警等。",
+            description: "IF 根据逻辑测试的真假返回两个不同结果，可嵌套使用，是所有办公软件和编程的基础逻辑函数。",
+            usageCase: {
+                title: "📌 案例：根据分数自动评定等级",
+                code: `// 场景: 分数>=90 优秀, >=60 及格, 否则不及格
+=IF(B2>=90, "优秀", IF(B2>=60, "及格", "不及格"))
+
+// 财务场景: 利润为正显示盈利，否则亏损
+=IF(C2>0, "盈利💰", "亏损⚠️")
+
+// 结合 AND/OR 多条件
+=IF(AND(D2>10000, E2>4.5), "发放奖金", "无奖金")`,
+                explain: "💡 IF 最多可嵌套64层，但建议使用 IFS 函数替代多层嵌套，提升可读性。"
+            }
+        },
+        {
+            id: "mid",
+            name: "MID (文本截取)",
+            problemSolved: "✂️ 解决「从文本中间特定位置提取指定长度字符」的问题。如身份证号提取生日、订单号分段、清洗不规范数据。",
+            description: "MID 根据起始位置和长度返回子字符串，常与 FIND/LEN 组合实现动态截取。",
+            usageCase: {
+                title: "📌 案例：从身份证号中提取出生日期",
+                code: `// 身份证号: 41010119900307663X
+// 第7位开始取8位数字 => 19900307
+=MID(A2, 7, 8)
+
+// 动态提取括号内的内容: "项目名称(预算20万)"
+=MID(A2, FIND("(", A2)+1, FIND(")", A2)-FIND("(", A2)-1)
+
+// 获取邮箱用户名
+=LEFT(A2, FIND("@", A2)-1)   // 与MID类似思想`,
+                explain: "💡 MID 配合 FIND 可以灵活提取任意位置的文本，是文本清洗的核心函数。"
+            }
+        },
+        {
+            id: "find_func",
+            name: "FIND / SEARCH (文本查找)",
+            problemSolved: "🔍 解决「定位某个字符或子串在文本中的位置」的问题。用于判断是否包含关键词、提取特定前后缀。",
+            description: "FIND 区分大小写，SEARCH 不区分大小写且支持通配符，常与 MID/LEFT/RIGHT 配合。",
+            usageCase: {
+                title: "📌 案例：从邮箱地址中提取域名",
+                code: `// 提取 @ 之后的部分
+=MID(A2, FIND("@", A2)+1, LEN(A2)-FIND("@", A2))
+
+// 判断是否包含“紧急”字样
+=IF(ISNUMBER(FIND("紧急", B2)), "加急", "普通")
+
+// 查找第二个空格的位置（复杂嵌套）`,
+                explain: "💡 如果找不到子串，FIND 会返回 #VALUE! 错误，建议配合 IFERROR 处理。"
+            }
+        },
+        {
+            id: "concat",
+            name: "CONCAT / TEXTJOIN (文本合并)",
+            problemSolved: "🔗 解决「将多个单元格内容合并成一个字符串」的问题。如拼接姓名、地址、生成唯一标识。",
+            description: "CONCAT 支持区域合并，TEXTJOIN 可指定分隔符并忽略空白单元格。",
+            usageCase: {
+                title: "📌 案例：合并姓、名、职位为完整称呼",
+                code: `// 简单拼接: A2="张", B2="三丰"
+=CONCAT(A2, B2, "道长")  // 张三丰道长
+
+// TEXTJOIN 带分隔符: 忽略空单元格
+=TEXTJOIN("-", TRUE, A2:C2)   // 若中间有空白则自动跳过`,
+                explain: "💡 TEXTJOIN 在处理不规则数据时非常灵活，是 CONCATENATE 的现代替代。"
+            }
+        },
+        {
+            id: "iferror",
+            name: "IFERROR (错误捕获)",
+            problemSolved: "🛡️ 解决「公式计算出现错误值时影响美观和计算」的问题。可自定义替代值，让报表更干净。",
+            description: "IFERROR 捕获所有错误类型（#N/A, #DIV/0!等）并返回指定内容。",
+            usageCase: {
+                title: "📌 案例：VLOOKUP 查找不到时显示“待补充”",
+                code: `=IFERROR(VLOOKUP(D2, A:B, 2, 0), "待补充")
+
+// 避免除零错误
+=IFERROR(C2/B2, "无销量")
+
+// 嵌套复杂运算兜底
+=IFERROR( (E2*F2)/G2, 0)`,
+                explain: "💡 IFERROR 会隐藏所有错误，若只想针对 #N/A 可使用 IFNA 函数，更精准。"
+            }
+        },
+        // 编程类保留典型场景
+        {
+            id: "map_js",
+            name: "Array.map() (JS转换)",
+            problemSolved: "🔄 解决「遍历数组并生成一个新数组」的问题。如提取对象属性、数据格式化。",
+            description: "map 不修改原数组，返回相同长度的新数组，适用于React列表渲染、数据预处理。",
+            usageCase: {
+                title: "📌 案例：提取用户姓名列表",
+                code: `const users = [
+  { id:1, name:'林静', age:26 },
+  { id:2, name:'陈瑞', age:32 }
+];
+const names = users.map(u => u.name);
+console.log(names); // ['林静', '陈瑞']`,
+                explain: "💡 map 是函数式编程核心，配合箭头函数简洁高效。"
+            }
+        },
+        {
+            id: "filter_js",
+            name: "Array.filter() (数据筛选)",
+            problemSolved: "🎯 解决「从数组中筛选出符合条件的元素」的问题。如展示已完成任务、过滤无效数据。",
+            description: "filter 返回新数组，保留回调返回 true 的元素。",
+            usageCase: {
+                title: "📌 案例：筛选库存大于0的商品",
+                code: `const products = [
+  { name:'手机', stock:0 },
+  { name:'电脑', stock:15 }
+];
+const available = products.filter(p => p.stock > 0);`,
+                explain: "💡 filter 常与 map 链式调用，实现筛选后转换。"
+            }
+        }
+    ];
+
+    // DOM 元素
+    const selectEl = document.getElementById('functionSelect');
+    const queryBtn = document.getElementById('queryBtn');
+    const contentArea = document.getElementById('contentArea');
+
+    // 构建下拉选项
+    function buildSelectOptions() {
+        selectEl.innerHTML = '';
+        const placeholderOpt = document.createElement('option');
+        placeholderOpt.value = '';
+        placeholderOpt.disabled = true;
+        placeholderOpt.selected = true;
+        placeholderOpt.textContent = '🔽 请选择函数 (VLOOKUP / SUMIFS / IF 等)';
+        selectEl.appendChild(placeholderOpt);
+
+        functionsLibrary.forEach(func => {
+            const option = document.createElement('option');
+            option.value = func.id;
+            option.textContent = func.name;
+            selectEl.appendChild(option);
+        });
+    }
+
+    // 根据id查找函数对象
+    function findFunctionById(id) {
+        return functionsLibrary.find(item => item.id === id);
+    }
+
+    // 安全转义HTML
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str
+            .replace(/&/g, '&amp;')
+            .replace(/</g, '&lt;')
+            .replace(/>/g, '&gt;')
+            .replace(/"/g, '&quot;')
+            .replace(/'/g, '&#39;')
+            .replace(/`/g, '&#96;');
+    }
+
+    // 核心渲染：展示场景（解决的问题）+ 案例
+    function renderFunctionDetails(selectedFunc) {
+        if (!selectedFunc) {
+            contentArea.innerHTML = `<div class="empty-state">⚠️ 未找到函数数据，请重新选择。</div>`;
+            return;
+        }
+
+        const { name, problemSolved, description, usageCase } = selectedFunc;
+        const caseTitle = usageCase?.title || "💻 典型应用案例";
+        const caseCode = usageCase?.code || "// 示例代码即将呈现，该函数非常实用。";
+        const caseExplain = usageCase?.explain || "此函数可高效解决对应场景问题，建议多加练习。";
+
+        const fullHtml = `
+            <div class="scene-card">
+                <div class="scene-title">
+                    <span>🧩</span> 
+                    <span>${escapeHtml(name)} · 场景与问题</span>
+                </div>
+                <div class="problem-badge">❓ 解决什么问题</div>
+                <div class="scene-desc" style="margin-bottom: 1rem;">
+                    ${escapeHtml(problemSolved)}
+                </div>
+                <div class="problem-badge" style="background:#e6f7ec; color:#2c6e2c;">🎯 典型使用场景</div>
+                <div class="scene-desc">
+                    ${escapeHtml(description)}
+                </div>
+            </div>
+            <div class="case-section">
+                <div class="case-header">
+                    <span>📘</span> ${escapeHtml(caseTitle)}
+                </div>
+                <div class="case-content">
+                    <pre><code>${escapeHtml(caseCode)}</code></pre>
+                    <div class="explain-box">
+                        💡 ${escapeHtml(caseExplain)}
+                    </div>
+                </div>
+            </div>
+        `;
+        contentArea.innerHTML = fullHtml;
+    }
+
+    // 查询按钮逻辑：根据当前选中的函数展示对应的场景、问题与案例
+    function handleQuery() {
+        const selectedValue = selectEl.value;
+        if (!selectedValue || selectedValue === '') {
+            contentArea.innerHTML = `<div class="empty-state">📢 请先在下拉框中选择一个函数，再点击「查询」按钮，查看其使用场景、解决问题与案例。</div>`;
+            return;
+        }
+        const funcData = findFunctionById(selectedValue);
+        if (funcData) {
+            renderFunctionDetails(funcData);
+        } else {
+            contentArea.innerHTML = `<div class="empty-state">❌ 未找到该函数的详细信息，请刷新页面重试。</div>`;
+        }
+    }
+
+    // 初始化页面: 构建下拉框，绑定事件
+    function init() {
+        buildSelectOptions();
+        // 初始状态显示友好提示
+        contentArea.innerHTML = `<div class="empty-state">
+            🧭 选择一个函数 → 点击「查询」→ 立即看到该函数「解决什么问题」以及「实际案例」<br>
+            📌 包含 VLOOKUP, XLOOKUP, SUMIFS, INDEX+MATCH, IF, MID, FIND 等热门函数
+        </div>`;
+        queryBtn.addEventListener('click', handleQuery);
+        // 添加快捷键支持: 回车键查询
+        selectEl.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                handleQuery();
+            }
+        });
+    }
+
+    init();
+</script>
+</body>
+</html>
